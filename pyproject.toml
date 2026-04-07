@@ -1,0 +1,137 @@
+# --------------------------------------------------------------------------
+# Build system
+# --------------------------------------------------------------------------
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# --------------------------------------------------------------------------
+# Project metadata (PEP 621)
+# --------------------------------------------------------------------------
+[project]
+name = "saswise"
+version = "0.1.0"
+description = "SASWISE-UE: Segmentation and Synthesis with Interpretable Scalable Ensembles for Uncertainty Estimation"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+  { name = "Weijie Chen" },
+  { name = "Alan B. McMillan" },
+]
+keywords = [
+  "machine-learning",
+  "uncertainty-estimation",
+  "ensemble-methods",
+  "medical-imaging",
+  "segmentation",
+  "synthesis",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Image Recognition",
+]
+dependencies = [
+  "torch>=1.8,<3",
+  "torchvision>=0.9,<1",
+  "numpy>=1.19,<3",
+  "PyYAML>=5.4,<7",
+  "tqdm>=4.50,<5",
+  "scikit-learn>=0.24,<2",
+  "pandas>=2.0,<3",
+  "matplotlib>=3.3,<4",
+  "tensorboard>=2.13,<3",
+  "monai>=1.2,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0,<9",
+  "pytest-cov>=4.0,<6",
+  "ruff>=0.4,<1",
+  "pre-commit>=3,<5",
+  "mypy>=1.6,<2",
+]
+
+[project.urls]
+Homepage      = "https://github.com/wchen-ai/SASWISE"
+"Group fork"  = "https://github.com/uw-rad-mitrp/SASWISE-UE"
+Paper         = "https://doi.org/10.1016/j.compbiomed.2025.110258"
+Issues        = "https://github.com/wchen-ai/SASWISE/issues"
+
+# --------------------------------------------------------------------------
+# Setuptools package layout (preserves the legacy `src/` mapping)
+# --------------------------------------------------------------------------
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# --------------------------------------------------------------------------
+# Ruff (lint + format)
+# --------------------------------------------------------------------------
+[tool.ruff]
+line-length    = 100
+target-version = "py39"
+extend-exclude = [
+  "experiment",
+  "build",
+  "dist",
+]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "F",   # pyflakes
+  "W",   # pycodestyle warnings
+  "I",   # isort
+  "B",   # bugbear
+  "UP",  # pyupgrade
+  "C4",  # comprehensions
+  "SIM", # simplify
+]
+ignore = [
+  "E501",  # line length is enforced by the formatter
+  "B008",  # function calls in defaults (common in argparse)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]   # re-exports
+"tests/*"     = ["B018"]   # useless expression in tests is fine
+
+[tool.ruff.format]
+quote-style               = "double"
+indent-style              = "space"
+skip-magic-trailing-comma = false
+line-ending               = "auto"
+
+# --------------------------------------------------------------------------
+# pytest
+# --------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion   = "7.0"
+testpaths    = ["tests"]
+python_files = ["test_*.py"]
+addopts      = "-ra --strict-markers"
+
+# --------------------------------------------------------------------------
+# mypy (loose by default — tighten per-module as you go)
+# --------------------------------------------------------------------------
+[tool.mypy]
+python_version         = "3.9"
+warn_unused_configs    = true
+warn_redundant_casts   = true
+warn_unused_ignores    = true
+no_implicit_optional   = true
+check_untyped_defs     = false
+ignore_missing_imports = true

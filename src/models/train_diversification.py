@@ -18,7 +18,7 @@ import importlib
 
 # Add the project root to the path so we can import modules properly
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from src.models.cook_model import cook_model
+from src.models.assemble_model import assemble_model
 from src.utils.training_logger import TrainingLogger
 
 
@@ -105,8 +105,8 @@ def load_data(config):
     return train_loader, val_loader
 
 
-def create_model(config, device, menu, model_num):
-    """Create a model with specified menu configuration."""
+def create_model(config, device, block_config, model_num):
+    """Create a model with specified block_config configuration."""
     # Load model architecture using the method specified in config
     model_module = importlib.import_module(config['model']['model_module'])
     model_class = getattr(model_module, config['model']['model_class'])
@@ -120,12 +120,12 @@ def create_model(config, device, menu, model_num):
     
     model = model_class(**model_args)
     
-    # Load cooked model state dict
+    # Load assembled model state dict
     model_path = config['paths']['model_path']
-    output_path = f"{os.path.dirname(model_path)}/current_meal_model_{model_num}.pth"
+    output_path = f"{os.path.dirname(model_path)}/current_submodel_model_{model_num}.pth"
     
-    # Use cook_model to create a model with the specified menu
-    cook_model(model_path, menu, output_path)
+    # Use assemble_model to create a model with the specified block_config
+    assemble_model(model_path, block_config, output_path)
     state_dict = torch.load(output_path, map_location=device)
     
     # Load the state dict with the original architecture
@@ -223,73 +223,73 @@ def validate(model, val_loader, criterion, device):
     return running_loss/len(val_loader), 100.*correct/total
 
 
-def calculate_menu_similarity(menu1, menu2):
-    """Calculate similarity between two menus."""
-    return sum(1 for a, b in zip(menu1, menu2) if a == b) / len(menu1)
+def calculate_block_config_similarity(block_config1, block_config2):
+    """Calculate similarity between two block_configs."""
+    return sum(1 for a, b in zip(block_config1, block_config2) if a == b) / len(block_config1)
 
 
-def generate_diverse_menu(serving_info, previous_menus=None, max_attempts=100):
-    """Generate a menu that is sufficiently different from previous menus."""
-    if previous_menus is None:
-        previous_menus = []
+def generate_diverse_block_config(variant_info, previous_block_configs=None, max_attempts=100):
+    """Generate a block_config that is sufficiently different from previous block_configs."""
+    if previous_block_configs is None:
+        previous_block_configs = []
     
-    num_courses = len(serving_info['courses'])
-    best_menu = None
+    num_blocks = len(variant_info['blocks'])
+    best_block_config = None
     lowest_similarity = float('inf')
     
     for _ in range(max_attempts):
-        menu = []
-        for course_num in range(1, num_courses + 1):
-            course = serving_info['courses'][str(course_num)]
-            num_servings = course['num_servings']
-            menu.append(random.randint(1, num_servings))
+        block_config = []
+        for block_id in range(1, num_blocks + 1):
+            block = variant_info['blocks'][str(block_id)]
+            num_variants = block['num_variants']
+            block_config.append(random.randint(1, num_variants))
         
-        # If no previous menus, accept first generated menu
-        if not previous_menus:
-            return menu
+        # If no previous block_configs, accept first generated block_config
+        if not previous_block_configs:
+            return block_config
         
-        # Calculate maximum similarity to any previous menu
-        max_similarity = max(calculate_menu_similarity(menu, prev_menu) 
-                           for prev_menu in previous_menus)
+        # Calculate maximum similarity to any previous block_config
+        max_similarity = max(calculate_block_config_similarity(block_config, prev_block_config) 
+                           for prev_block_config in previous_block_configs)
         
-        # Update best menu if this one is more diverse
+        # Update best block_config if this one is more diverse
         if max_similarity < lowest_similarity:
             lowest_similarity = max_similarity
-            best_menu = menu.copy()
+            best_block_config = block_config.copy()
         
-        # Accept menu if it's diverse enough
+        # Accept block_config if it's diverse enough
         if lowest_similarity < 0.6:
-            return best_menu
+            return best_block_config
     
-    # Return best found menu if we couldn't find a perfectly diverse one
-    return best_menu
+    # Return best found block_config if we couldn't find a perfectly diverse one
+    return best_block_config
 
 
-def update_serving_weights(model, menu, serving_info, device):
-    """Update weights for each serving used in the menu."""
+def update_variant_weights(model, block_config, variant_info, device):
+    """Update weights for each variant used in the block_config."""
     state_dict = model.state_dict()
     
-    # For each course in the menu
-    for course_num, serving_num in enumerate(menu, start=1):
-        course = serving_info['courses'][str(course_num)]
-        serving = course['servings'][serving_num - 1]
+    # For each block in the block_config
+    for block_id, variant_id in enumerate(block_config, start=1):
+        block = variant_info['blocks'][str(block_id)]
+        variant = block['variants'][variant_id - 1]
         
-        # Get the nodes for this course
-        course_nodes = course['nodes']
+        # Get the nodes for this block
+        block_nodes = block['nodes']
         
-        # Create a state dict for this serving containing only its nodes
-        serving_state_dict = {
+        # Create a state dict for this variant containing only its nodes
+        variant_state_dict = {
             key: value for key, value in state_dict.items()
-            if any(key.startswith(node) or key == node for node in course_nodes)
+            if any(key.startswith(node) or key == node for node in block_nodes)
         }
         
         # Save the updated weights
-        torch.save(serving_state_dict, serving['state_dict'])
+        torch.save(variant_state_dict, variant['state_dict'])
 
 
-def update_serving_history(serving_info, menu, epochs, log_dir):
-    """Update training history for each serving."""
-    history_file = log_dir / "serving_training_history.json"
+def update_variant_history(variant_info, block_config, epochs, log_dir):
+    """Update training history for each variant."""
+    history_file = log_dir / "variant_training_history.json"
     
     # Load existing history or create new
     if history_file.exists():
@@ -299,17 +299,17 @@ def update_serving_history(serving_info, menu, epochs, log_dir):
         history = defaultdict(lambda: defaultdict(int))
         history = dict(history)  # Convert to regular dict for JSON serialization
     
-    # Update epoch counts for each serving in the menu
-    for course_num, serving_num in enumerate(menu, start=1):
-        course_key = f"course_{course_num}"
-        serving_key = f"serving_{serving_num}"
+    # Update epoch counts for each variant in the block_config
+    for block_id, variant_id in enumerate(block_config, start=1):
+        block_key = f"block_{block_id}"
+        variant_key = f"variant_{variant_id}"
         
-        if course_key not in history:
-            history[course_key] = {}
-        if serving_key not in history[course_key]:
-            history[course_key][serving_key] = 0
+        if block_key not in history:
+            history[block_key] = {}
+        if variant_key not in history[block_key]:
+            history[block_key][variant_key] = 0
             
-        history[course_key][serving_key] += epochs
+        history[block_key][variant_key] += epochs
     
     # Save updated history
     with open(history_file, 'w') as f:
@@ -341,40 +341,40 @@ def main():
     train_loader, val_loader = load_data(config)
     print("Data loaded successfully")
     
-    # Load serving info for menu generation
-    servings_dir = Path(config['paths']['model_path']).parent.parent / "servings"
-    with open(servings_dir / "serving_info.json", 'r') as f:
-        serving_info = json.load(f)
+    # Load variant info for block_config generation
+    variants_dir = Path(config['paths']['model_path']).parent.parent / "variants"
+    with open(variants_dir / "variant_info.json", 'r') as f:
+        variant_info = json.load(f)
     
     # Training loop
     print("\nStarting training...")
     
-    # Initialize menu history
-    menu_history = []
+    # Initialize block_config history
+    block_config_history = []
     
     for round_idx in range(1, config['training']['num_rounds'] + 1):
         print(f"\nRound {round_idx}/{config['training']['num_rounds']}")
         
-        # Generate diverse menus for this round
-        menu1 = generate_diverse_menu(serving_info, menu_history)
-        menu_history.append(menu1)
+        # Generate diverse block_configs for this round
+        block_config1 = generate_diverse_block_config(variant_info, block_config_history)
+        block_config_history.append(block_config1)
         
-        # Generate second menu diverse from both menu history and menu1
-        menu2 = generate_diverse_menu(serving_info, menu_history)
-        menu_history.append(menu2)
+        # Generate second block_config diverse from both block_config history and block_config1
+        block_config2 = generate_diverse_block_config(variant_info, block_config_history)
+        block_config_history.append(block_config2)
         
-        # Keep menu history manageable (keep last 5 rounds = 10 menus)
-        if len(menu_history) > 10:
-            menu_history = menu_history[-10:]
+        # Keep block_config history manageable (keep last 5 rounds = 10 block_configs)
+        if len(block_config_history) > 10:
+            block_config_history = block_config_history[-10:]
         
-        similarity = calculate_menu_similarity(menu1, menu2)
-        print(f"Menu 1: {menu1}")
-        print(f"Menu 2: {menu2}")
-        print(f"Menu similarity: {similarity:.2f}")
+        similarity = calculate_block_config_similarity(block_config1, block_config2)
+        print(f"BlockConfig 1: {block_config1}")
+        print(f"BlockConfig 2: {block_config2}")
+        print(f"BlockConfig similarity: {similarity:.2f}")
         
-        # Create models with different menus
-        model1 = create_model(config, device, menu1, 1)
-        model2 = create_model(config, device, menu2, 2)
+        # Create models with different block_configs
+        model1 = create_model(config, device, block_config1, 1)
+        model2 = create_model(config, device, block_config2, 2)
         print("Models created and loaded successfully")
         
         # Training setup
@@ -408,9 +408,9 @@ def main():
             logger.log_epoch(
                 round_idx=round_idx,
                 epoch=epoch,
-                menu1=menu1,
-                menu2=menu2,
-                menu_similarity=similarity,
+                block_config1=block_config1,
+                block_config2=block_config2,
+                block_config_similarity=similarity,
                 train_acc_loss=train_acc_loss,
                 train_cons_loss=train_cons_loss,
                 train_acc=train_acc,
@@ -418,10 +418,10 @@ def main():
                 val_acc=val_acc
             )
         
-        # Update serving weights and history
-        update_serving_weights(model1, menu1, serving_info, device)
-        update_serving_history(serving_info, menu1, config['training']['epochs_per_round'], log_dir)
-        print(f"Updated weights and history for menu 1 servings")
+        # Update variant weights and history
+        update_variant_weights(model1, block_config1, variant_info, device)
+        update_variant_history(variant_info, block_config1, config['training']['epochs_per_round'], log_dir)
+        print(f"Updated weights and history for block_config 1 variants")
         
         # End round in logger (generates plots)
         logger.end_round(round_idx)

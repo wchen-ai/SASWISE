@@ -20,7 +20,7 @@ def setup_experiment_folders():
         os.makedirs(experiment_name)
         os.makedirs(os.path.join(experiment_name, "models"))
         os.makedirs(os.path.join(experiment_name, "logs"))
-        os.makedirs(os.path.join(experiment_name, "servings"))
+        os.makedirs(os.path.join(experiment_name, "variants"))
         os.makedirs(os.path.join(experiment_name, "data"))
         # Create train_config.yaml file
         with open(os.path.join(experiment_name, "train_config.yaml"), 'w') as f:
@@ -84,9 +84,9 @@ def prepare_model(experiment_name):
 def print_next_steps():
     """Print the commands that need to be run next"""
     commands = [
-        "python -m src.models.kitchen_setup.generate_hierarchy --state_dict_path CIFAR10_ResNet/models/base_model.pth --out CIFAR10_ResNet/models/hierarchy.json",
-        "python -m src.models.kitchen_setup.analyze_course_parameters --hierarchy_path CIFAR10_ResNet/models/hierarchy.json --course_dict CIFAR10_ResNet/models/course_dict.json --output_file CIFAR10_ResNet/models/course_analysis.json",
-        "python -m src.models.kitchen_setup.generate_serving --hierarchy_path CIFAR10_ResNet/models/hierarchy.json --output_file CIFAR10_ResNet/servings/serving_info.json"
+        "python -m src.models.warehouse_setup.generate_hierarchy --state_dict_path CIFAR10_ResNet/models/base_model.pth --out CIFAR10_ResNet/models/hierarchy.json",
+        "python -m src.models.warehouse_setup.analyze_block_parameters --hierarchy_path CIFAR10_ResNet/models/hierarchy.json --block_assignment CIFAR10_ResNet/models/block_assignment.json --output_file CIFAR10_ResNet/models/block_analysis.json",
+        "python -m src.models.warehouse_setup.generate_variant --hierarchy_path CIFAR10_ResNet/models/hierarchy.json --output_file CIFAR10_ResNet/variants/variant_info.json"
     ]
     
     print("\nNext steps - run these commands in order:")

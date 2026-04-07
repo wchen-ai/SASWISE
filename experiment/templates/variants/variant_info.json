@@ -1,0 +1,52 @@
+{
+  "experiment_name": "YOUR_EXPERIMENT",
+  "model_type": "YOUR_MODEL_TYPE",
+  "blocks": {
+    "1": {
+      "name": "block_1",
+      "num_variants": 4,
+      "nodes": ["layer1"],
+      "variants": [
+        {
+          "name": "variant_1",
+          "state_dict": "experiment/YOUR_EXPERIMENT/variants/block_1_variant_1.pth"
+        },
+        {
+          "name": "variant_2",
+          "state_dict": "experiment/YOUR_EXPERIMENT/variants/block_1_variant_2.pth"
+        },
+        {
+          "name": "variant_3",
+          "state_dict": "experiment/YOUR_EXPERIMENT/variants/block_1_variant_3.pth"
+        },
+        {
+          "name": "variant_4",
+          "state_dict": "experiment/YOUR_EXPERIMENT/variants/block_1_variant_4.pth"
+        }
+      ]
+    },
+    "2": {
+      "name": "block_2",
+      "num_variants": 4,
+      "nodes": ["layer2"],
+      "variants": [
+        {
+          "name": "variant_1",
+          "state_dict": "experiment/YOUR_EXPERIMENT/variants/block_2_variant_1.pth"
+        },
+        {
+          "name": "variant_2",
+          "state_dict": "experiment/YOUR_EXPERIMENT/variants/block_2_variant_2.pth"
+        },
+        {
+          "name": "variant_3",
+          "state_dict": "experiment/YOUR_EXPERIMENT/variants/block_2_variant_3.pth"
+        },
+        {
+          "name": "variant_4",
+          "state_dict": "experiment/YOUR_EXPERIMENT/variants/block_2_variant_4.pth"
+        }
+      ]
+    }
+  }
+} 

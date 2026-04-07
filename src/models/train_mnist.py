@@ -75,7 +75,7 @@ def create_model(config, device):
     # Create ResNet18 model
     model = resnet18()
     
-    # Load cooked model state dict
+    # Load assembled model state dict
     state_dict = torch.load(config['paths']['model_path'], map_location=device)
     
     # Modify first conv layer for grayscale input

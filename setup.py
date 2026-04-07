@@ -1,13 +1,10 @@
-from setuptools import setup, find_packages
+"""Backwards-compatible shim.
 
-setup(
-    name="saswise",
-    version="0.1.0",
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
-    install_requires=[
-        "torch>=2.0.0",
-        "numpy>=1.20.0",
-    ],
-    python_requires=">=3.9",
-) 
+All real metadata, dependencies, and tool configuration live in
+``pyproject.toml`` (PEP 621). This file exists only so that legacy
+tooling that still invokes ``python setup.py ...`` continues to work.
+"""
+
+from setuptools import setup
+
+setup()

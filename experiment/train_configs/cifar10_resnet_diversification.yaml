@@ -43,10 +43,10 @@ model:
 
 # Training parameters
 training:
-  # Number of rounds to perform (each round draws two new menus)
+  # Number of rounds to perform (each round draws two new block_configs)
   num_rounds: 100
   
-  # Number of epochs to train each menu configuration within a round
+  # Number of epochs to train each block_config configuration within a round
   epochs_per_round: 10
   
   # Weight of consistency loss relative to accuracy loss

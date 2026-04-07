@@ -17,12 +17,12 @@ class FineTuner:
         self,
         model: Module,
         config: Dict[str, Any],
-        kitchen: Dict[str, Any],
+        warehouse: Dict[str, Any],
         logger: Optional[TrainingLogger] = None
     ):
         self.model = model
         self.config = config
-        self.kitchen = kitchen
+        self.warehouse = warehouse
         self.logger = logger or TrainingLogger()
         
         self.device = next(model.parameters()).device
@@ -85,7 +85,7 @@ class FineTuner:
             self.logger.end_epoch()
         
         self.logger.end_training()
-        self._update_kitchen()
+        self._update_warehouse()
     
     def _training_step(
         self,
@@ -140,7 +140,7 @@ class FineTuner:
         
         self.logger.log_info(f'Saved checkpoint to {checkpoint_path}')
     
-    def _update_kitchen(self):
-        """Update the kitchen with the fine-tuned weights."""
-        self.kitchen['model'].load_state_dict(self.model.state_dict())
-        self.logger.log_info('Updated kitchen with fine-tuned weights') 
+    def _update_warehouse(self):
+        """Update the warehouse with the fine-tuned weights."""
+        self.warehouse['model'].load_state_dict(self.model.state_dict())
+        self.logger.log_info('Updated warehouse with fine-tuned weights') 

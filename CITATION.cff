@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use SASWISE in your research, please cite the paper below."
+title: "SASWISE-UE: Segmentation and synthesis with interpretable scalable ensembles for uncertainty estimation"
+abstract: >-
+  SASWISE is a framework for training and testing models with swappable
+  components ("variants") organised into "blocks". A single base
+  checkpoint is decomposed into independent block state dictionaries,
+  multiple variants are trained per block via a diversification
+  consistency loss, and inference-time block_configs assemble interpretable
+  sub-model ensembles for uncertainty estimation without retraining or
+  additional hardware.
+type: software
+authors:
+  - family-names: Chen
+    given-names: Weijie
+    affiliation: "University of Wisconsin–Madison"
+  - family-names: McMillan
+    given-names: "Alan B."
+    affiliation: "University of Wisconsin–Madison"
+license: MIT
+repository-code: "https://github.com/wchen-ai/SASWISE"
+url: "https://github.com/uw-rad-mitrp/SASWISE-UE"
+keywords:
+  - machine-learning
+  - uncertainty-estimation
+  - ensemble-methods
+  - medical-imaging
+  - segmentation
+  - synthesis
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Chen
+      given-names: Weijie
+    - family-names: McMillan
+      given-names: "Alan B."
+  title: "SASWISE-UE: Segmentation and synthesis with interpretable scalable ensembles for uncertainty estimation"
+  journal: "Computers in Biology and Medicine"
+  year: 2025
+  doi: "10.1016/j.compbiomed.2025.110258"
+  url: "https://doi.org/10.1016/j.compbiomed.2025.110258"

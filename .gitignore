@@ -1,0 +1,79 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Virtual environments ---
+venv/
+.venv/
+env/
+ENV/
+.env
+.python-version
+
+# --- Testing & linting caches ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# --- IDEs / editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# --- OS noise ---
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*.ipynb_meta
+
+# --- SASWISE experiment artefacts ---
+# Keep templates, ignore generated experiment outputs.
+experiment/*/models/*.pth
+experiment/*/models/*.pt
+experiment/*/models/hierarchy/
+experiment/*/models/course_analysis/
+experiment/*/data/
+experiment/*/logs/
+experiment/*/servings/servings/
+experiment/*/runs/
+experiment/CIFAR10_ResNet/
+checkpoints/
+logs/
+runs/
+outputs/
+wandb/
+*.tar.gz
+*.zip

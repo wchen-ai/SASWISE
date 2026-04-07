@@ -29,7 +29,7 @@ class TrainingLogger:
             with open(self.summary_file, 'r') as f:
                 self.all_rounds_data = json.load(f)
     
-    def log_epoch(self, round_idx, epoch, menu1, menu2, menu_similarity, 
+    def log_epoch(self, round_idx, epoch, block_config1, block_config2, block_config_similarity, 
                  train_acc_loss, train_cons_loss, train_acc, val_loss=None, val_acc=None):
         """Log metrics for a single epoch."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -39,9 +39,9 @@ class TrainingLogger:
             'timestamp': timestamp,
             'round': round_idx,
             'epoch': epoch,
-            'menu1': menu1,
-            'menu2': menu2,
-            'menu_similarity': menu_similarity,
+            'block_config1': block_config1,
+            'block_config2': block_config2,
+            'block_config_similarity': block_config_similarity,
             'train_accuracy_loss': train_acc_loss,
             'train_consistency_loss': train_cons_loss,
             'train_accuracy': train_acc

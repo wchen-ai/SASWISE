@@ -1,11 +1,24 @@
-torch>=1.8.0
-torchvision>=0.9.0
-numpy>=1.19.0
-PyYAML>=5.4.0
-tqdm>=4.50.0
-pytest>=7.0.0
-scikit-learn>=0.24.0
-pandas>=2.0.0
-matplotlib>=3.3.0
-tensorboard>=2.13.0
-monai>=1.2.0 
+# Runtime dependencies for SASWISE.
+# Dev / lint / test deps live in requirements-dev.txt or pyproject.toml's [project.optional-dependencies] dev extra.
+# Upper bounds are intentionally permissive but capped to one major version
+# beyond the tested floor to keep `pip install` reproducible.
+
+# --- Core ML ---
+torch>=1.8,<3
+torchvision>=0.9,<1
+numpy>=1.19,<3
+
+# --- Config / IO ---
+PyYAML>=5.4,<7
+tqdm>=4.50,<5
+
+# --- Analysis / metrics ---
+scikit-learn>=0.24,<2
+pandas>=2.0,<3
+matplotlib>=3.3,<4
+
+# --- Logging / monitoring ---
+tensorboard>=2.13,<3
+
+# --- Medical imaging ---
+monai>=1.2,<2

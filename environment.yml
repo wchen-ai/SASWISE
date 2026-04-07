@@ -1,0 +1,23 @@
+# Conda environment for SASWISE.
+# Create with:   conda env create -f environment.yml
+# Update with:   conda env update -f environment.yml --prune
+name: saswise
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pytorch>=1.8
+  - torchvision>=0.9
+  - numpy>=1.19
+  - pyyaml>=5.4
+  - tqdm>=4.50
+  - scikit-learn>=0.24
+  - pandas>=2.0
+  - matplotlib>=3.3
+  - tensorboard>=2.13
+  - pip:
+      - monai>=1.2,<2
+      - -e .
