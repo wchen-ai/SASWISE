@@ -201,25 +201,25 @@ two clean interpretations.
 
 The total loss stays
 
-$$
-L_{\text{total}} \;=\; L_{\text{task}} \;+\; \lambda_t \cdot L_{\text{cons}}
-$$
+```
+L_total  =  L_task  +  λ_t · L_cons
+```
 
 and `λ_t` is chosen so that the weighted consistency share approaches
 a fixed target ratio `r`. After long training the asymptotic
 contributions are
 
-$$
-\frac{\lambda_t \cdot L_{\text{cons}}}{L_{\text{task}} + \lambda_t \cdot L_{\text{cons}}} \;\longrightarrow\; r,
-\qquad
-\frac{L_{\text{task}}}{L_{\text{task}} + \lambda_t \cdot L_{\text{cons}}} \;\longrightarrow\; 1 - r.
-$$
+```
+    λ_t · L_cons                                    L_task
+─────────────────────  →  r          and    ─────────────────────  →  1 − r
+ L_task + λ_t·L_cons                          L_task + λ_t·L_cons
+```
 
 So the final ratio is
 
-$$
-\text{task} : \text{consistency} \;=\; (1 - r) : r.
-$$
+```
+task : consistency  =  (1 − r) : r
+```
 
 Examples:
 
@@ -242,9 +242,9 @@ contribution ratio above hold in expectation.
 If we *stop* optimising the task loss after the warm-up and train
 only with the consistency loss, then asymptotically
 
-$$
-\text{task} : \text{consistency} \;=\; 0 : 1.
-$$
+```
+task : consistency  =  0 : 1
+```
 
 This is the degenerate end of the spectrum: the model is no longer
 fitting the data, only enforcing agreement between sub-models. Useful

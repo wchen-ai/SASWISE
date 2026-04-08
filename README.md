@@ -76,7 +76,6 @@ The companion group repository is
 
 ## Table of contents
 
-- [Terminology](#terminology)
 - [Core concepts](#core-concepts)
 - [Installation](#installation)
 - [Adopt any pretrained checkpoint (recommended path)](#adopt-any-pretrained-checkpoint-recommended-path)
@@ -95,29 +94,15 @@ The companion group repository is
 
 ---
 
-## Terminology
-
-The codebase uses neutral, ML-domain terminology. The published paper
-uses a culinary metaphor for the same concepts. The two are mapped
-here once and only here:
-
-| Code (this repository)   | Paper / earlier prose | Meaning |
-|--------------------------|-----------------------|---------|
-| **Block**                | Course                | A logical, non-overlapping partition of the model — typically one or more layers — swapped as a unit. |
-| **Variant**              | Serving               | One concrete parameter set for a given block. Multiple variants per block produce ensemble diversity. |
-| **Block configuration** (`block_config`) | Menu     | A mapping `{block_id → variant_id}` that selects one variant per block to specify a sub-model. |
-| **Sub-model**            | Meal                  | A complete model assembled from one block configuration. |
-| **Warehouse**            | Kitchen               | The on-disk store of variants together with the API to read, write, decompose, and assemble them. |
-| **`build_warehouse`**    | `kitchen_setup`       | Build a fresh warehouse from a pretrained checkpoint. |
-| **`assemble_model`**     | `cook_model`          | Assemble a sub-model on disk from a block configuration. |
-| **`BlockWarehouse`**     | `TastingMenu`         | Class that manages the on-disk variant store. |
-| **`ModelAssembler`**     | `ModelCook`           | Class that grafts variants into a model instance. |
-| **`EnsembleEvaluator`**  | `MichelynInspector`   | CLI that sweeps block configurations and evaluates the ensemble. |
-
-The published paper acronym **SASWISE-UE** is unchanged; only the
-internal Python identifiers have been modernised.
-
 ## Core concepts
+
+| Term | Meaning |
+|---|---|
+| **Block** | A logical, non-overlapping partition of the model — typically one or more layers — swapped as a unit. |
+| **Variant** | One concrete parameter set for a given block. Multiple variants per block produce ensemble diversity. |
+| **Block configuration** (`block_config`) | A mapping `{block_id → variant_id}` that selects one variant per block to specify a sub-model. |
+| **Sub-model** | A complete model assembled from one block configuration. |
+| **Warehouse** | The on-disk store of variants together with the API to read, write, decompose, and assemble them. |
 
 A SASWISE warehouse with `B` blocks and `V` variants per block
 exposes `V^B` distinct sub-models from a single trained base
@@ -262,11 +247,11 @@ training and recomputes `λ` every step so that, in expectation, the
 consistency term contributes a fixed fraction of the total loss
 *regardless of absolute scale*:
 
-$$
-\lambda \;=\; \frac{r}{1 - r}\;\cdot\;\frac{\mathrm{EMA}[L_\text{task}]}{\mathrm{EMA}[L_\text{cons}]}
-\quad\Longrightarrow\quad
-\frac{\lambda \cdot L_\text{cons}}{L_\text{task} + \lambda \cdot L_\text{cons}} \;\approx\; r
-$$
+```
+        r       EMA[L_task]                       λ · L_cons
+λ  =  ─────  ·  ───────────       which makes  ─────────────────  ≈  r
+       1−r      EMA[L_cons]                     L_task + λ·L_cons
+```
 
 With the default `target_ratio = 0.1`, the training objective is
 roughly **90 % task loss + 10 % consistency loss** at every step,
